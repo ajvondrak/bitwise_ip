@@ -25,7 +25,7 @@ defmodule BitwiseIp.Blocks do
   def optimize(blocks) do
     case try_to_optimize(blocks) do
       {:success, blocks} -> optimize(blocks)
-      :failure -> blocks
+      :failure -> blocks |> Enum.sort_by(& &1.mask)
     end
   end
 

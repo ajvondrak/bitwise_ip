@@ -76,6 +76,11 @@ defmodule BitwiseIp.BlocksTest do
       assert Blocks.optimize(blocks) == Blocks.parse!(["1.2.3.4/16"])
     end
 
+    test "ordering" do
+      blocks = Blocks.parse!(~w[1.2.3.4/32 2.3.4.5/16])
+      assert Blocks.optimize(blocks) == Blocks.parse!(~w[2.3.4.5/16 1.2.3.4/32])
+    end
+
     test "fixpoint iteration" do
       blocks =
         Blocks.parse!(~w[
@@ -93,9 +98,15 @@ defmodule BitwiseIp.BlocksTest do
         |> Enum.shuffle()
         |> Blocks.optimize()
         |> Enum.map(&to_string/1)
-        |> Enum.sort()
 
-      assert blocks == ~w[1::/16 2::/16 3.0.0.0/8 4.0.0.0/8]
+      assert Enum.sort(blocks) == ~w[1::/16 2::/16 3.0.0.0/8 4.0.0.0/8]
+
+      masks =
+        Enum.map(blocks, fn block ->
+          String.split(block, "/") |> Enum.at(-1)
+        end)
+
+      assert masks == ~w[8 8 16 16]
     end
   end
 end
