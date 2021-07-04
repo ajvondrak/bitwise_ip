@@ -256,4 +256,106 @@ defmodule BitwiseIp.BlockTest do
       refute Block.member?(block, BitwiseIp.encode(ipv4()))
     end
   end
+
+  describe "IPv4 contains" do
+    test "subset" do
+      ip = ipv4() |> as_string()
+      a = Block.parse!("#{ip}/3")
+      b = Block.parse!("#{ip}/14")
+      assert Block.contains?(a, b)
+    end
+
+    test "superset" do
+      ip = ipv4() |> as_string()
+      a = Block.parse!("#{ip}/15")
+      b = Block.parse!("#{ip}/9")
+      refute Block.contains?(a, b)
+    end
+
+    test "equivalent" do
+      ip = ipv4() |> as_string()
+      a = Block.parse!("#{ip}/26")
+      assert Block.contains?(a, a)
+    end
+
+    test "disjoint" do
+      a = Block.parse!("1.2.0.0/16")
+      b = Block.parse!("1.3.0.0/16")
+      refute Block.contains?(a, b)
+      refute Block.contains?(b, a)
+    end
+
+    test "universal" do
+      a = Block.parse!("0.0.0.0/0")
+      b = Block.parse!("#{ipv4() |> as_string()}/16")
+      assert Block.contains?(a, b)
+      refute Block.contains?(b, a)
+    end
+
+    test "exact" do
+      ip = ipv4() |> as_string()
+      a = Block.parse!(ip)
+      b = Block.parse!("#{ip}/31")
+      assert Block.contains?(a, a)
+      refute Block.contains?(a, b)
+      assert Block.contains?(b, a)
+    end
+
+    test "IPv6" do
+      a = Block.parse!("0.0.0.0/0")
+      b = Block.parse!("::/0")
+      refute Block.contains?(a, b)
+    end
+  end
+
+  describe "IPv6 contains" do
+    test "subset" do
+      ip = ipv6() |> as_string()
+      a = Block.parse!("#{ip}/31")
+      b = Block.parse!("#{ip}/41")
+      assert Block.contains?(a, b)
+    end
+
+    test "superset" do
+      ip = ipv6() |> as_string()
+      a = Block.parse!("#{ip}/59")
+      b = Block.parse!("#{ip}/26")
+      refute Block.contains?(a, b)
+    end
+
+    test "equivalent" do
+      ip = ipv6() |> as_string()
+      a = Block.parse!("#{ip}/53")
+      assert Block.contains?(a, a)
+    end
+
+    test "disjoint" do
+      a = Block.parse!("1:2::/58")
+      b = Block.parse!("1:3::/97")
+      refute Block.contains?(a, b)
+      refute Block.contains?(b, a)
+    end
+
+    test "universal" do
+      a = Block.parse!("::/0")
+      b = Block.parse!("#{ipv6() |> as_string()}/93")
+      assert Block.contains?(a, b)
+      refute Block.contains?(b, a)
+    end
+
+    test "exact" do
+      ip = ipv6() |> as_string()
+      a = Block.parse!(ip)
+      b = Block.parse!("#{ip}/23")
+      assert Block.contains?(a, a)
+      refute Block.contains?(a, b)
+      assert Block.contains?(b, a)
+    end
+
+    test "IPv4" do
+      a = Block.parse!("::/0")
+      b = Block.parse!("0.0.0.0/0")
+      refute Block.contains?(a, b)
+    end
+  end
 end

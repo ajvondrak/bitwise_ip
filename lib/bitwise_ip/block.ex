@@ -8,6 +8,10 @@ defmodule BitwiseIp.Block do
       (ip.address &&& block.mask) == block.prefix.address
   end
 
+  def contains?(sup, sub) do
+    sup.mask <= sub.mask && member?(sup, sub.prefix)
+  end
+
   def parse!(cidr) do
     case parse(cidr) do
       {:ok, block} -> block

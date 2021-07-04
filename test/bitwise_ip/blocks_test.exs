@@ -64,4 +64,38 @@ defmodule BitwiseIp.BlocksTest do
     valid = ~w[0.0.0.0/5 ::/10]
     assert Blocks.parse(cidrs) |> Enum.map(&to_string/1) == valid
   end
+
+  describe "optimize/1" do
+    test "unmergeable blocks" do
+      blocks = Blocks.parse!(["1.2.3.4/16", "2.3.4.5/16"])
+      assert Blocks.optimize(blocks) == blocks
+    end
+
+    test "mergeable blocks" do
+      blocks = Blocks.parse!(["1.2.3.4/16", "1.2.3.4/24"])
+      assert Blocks.optimize(blocks) == Blocks.parse!(["1.2.3.4/16"])
+    end
+
+    test "fixpoint iteration" do
+      blocks =
+        Blocks.parse!(~w[
+          1::/16
+          2::/16
+          2:2::/32
+          3.0.0.0/8
+          3.3.0.0/16
+          3.3.3.0/24
+          4.0.0.0/8
+          4.4.0.0/16
+          4.4.4.0/24
+          4.4.4.4/32
+        ])
+        |> Enum.shuffle()
+        |> Blocks.optimize()
+        |> Enum.map(&to_string/1)
+        |> Enum.sort()
+
+      assert blocks == ~w[1::/16 2::/16 3.0.0.0/8 4.0.0.0/8]
+    end
+  end
 end
