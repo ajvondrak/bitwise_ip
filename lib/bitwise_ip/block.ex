@@ -3,9 +3,18 @@ defmodule BitwiseIp.Block do
 
   defstruct [:prefix, :mask]
 
-  def member?(block, ip) do
-    ip.protocol == block.prefix.protocol &&
-      (ip.address &&& block.mask) == block.prefix.address
+  def member?(
+    %BitwiseIp.Block{
+      prefix: %BitwiseIp{protocol: protocol, address: net},
+      mask: mask
+    },
+    %BitwiseIp{protocol: protocol, address: ip}
+  ) do
+    (ip &&& mask) == net
+  end
+
+  def member?(_, _) do
+    false
   end
 
   def contains?(sup, sub) do
