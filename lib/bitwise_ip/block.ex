@@ -12,6 +12,26 @@ defmodule BitwiseIp.Block do
     sup.mask <= sub.mask && member?(sup, sub.prefix)
   end
 
+  for mask <- 1..32, mask = BitwiseIp.Mask.encode(:v4, mask) do
+    size = :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
+    def size(block) when block.mask == unquote(mask), do: unquote(size)
+  end
+
+  for mask <- 1..128, mask = BitwiseIp.Mask.encode(:v6, mask) do
+    size = :binary.decode_unsigned(<<(~~~mask)::128>>) + 1
+    def size(block) when block.mask == unquote(mask), do: unquote(size)
+  end
+
+  @size_v4 BitwiseIp.Mask.encode(:v4, 32) + 1
+  @size_v6 BitwiseIp.Mask.encode(:v6, 128) + 1
+
+  def size(block) when block.mask == 0 do
+    case block.prefix.protocol do
+      :v4 -> @size_v4
+      :v6 -> @size_v6
+    end
+  end
+
   def parse!(cidr) do
     case parse(cidr) do
       {:ok, block} -> block
@@ -41,14 +61,14 @@ defmodule BitwiseIp.Block do
     end
   end
 
-  @v4 BitwiseIp.Mask.encode(:v4, 32)
-  @v6 BitwiseIp.Mask.encode(:v6, 128)
+  @mask_v4 BitwiseIp.Mask.encode(:v4, 32)
+  @mask_v6 BitwiseIp.Mask.encode(:v6, 128)
 
   defp parse_without_mask(ip) do
     with {:ok, ip} <- BitwiseIp.parse(ip) do
       case ip.protocol do
-        :v4 -> {:ok, %BitwiseIp.Block{prefix: ip, mask: @v4}}
-        :v6 -> {:ok, %BitwiseIp.Block{prefix: ip, mask: @v6}}
+        :v4 -> {:ok, %BitwiseIp.Block{prefix: ip, mask: @mask_v4}}
+        :v6 -> {:ok, %BitwiseIp.Block{prefix: ip, mask: @mask_v6}}
       end
     end
   end
@@ -70,17 +90,13 @@ defmodule BitwiseIp.Block do
     end
 
     def count(block) do
-      case block.prefix.protocol do
-        :v4 -> {:ok, :binary.decode_unsigned(<<(~~~block.mask)::32>>) + 1}
-        :v6 -> {:ok, :binary.decode_unsigned(<<(~~~block.mask)::128>>) + 1}
-      end
+      {:ok, BitwiseIp.Block.size(block)}
     end
 
     def slice(block) do
-      with {:ok, size} <- count(block) do
-        first = block.prefix
-        {:ok, size, &slice(%{first | address: first.address + &1}, &2)}
-      end
+      size = BitwiseIp.Block.size(block)
+      first = block.prefix
+      {:ok, size, &slice(%{first | address: first.address + &1}, &2)}
     end
 
     defp slice(ip, 1) do
@@ -92,11 +108,10 @@ defmodule BitwiseIp.Block do
     end
 
     def reduce(block, acc, fun) do
-      with {:ok, size} <- count(block) do
-        first = block.prefix
-        last = %{first | address: first.address + size - 1}
-        reduce(first, last, acc, fun)
-      end
+      size = BitwiseIp.Block.size(block)
+      first = block.prefix
+      last = %{first | address: first.address + size - 1}
+      reduce(first, last, acc, fun)
     end
 
     defp reduce(_first, _last, {:halt, acc}, _fun) do
