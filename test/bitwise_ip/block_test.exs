@@ -358,4 +358,80 @@ defmodule BitwiseIp.BlockTest do
       refute Block.contains?(a, b)
     end
   end
+
+  describe "enumerable" do
+    test "IPv4 membership" do
+      assert BitwiseIp.parse!("127.0.0.1") in Block.parse!("127.0.0.0/8")
+      assert BitwiseIp.parse!("192.168.0.1") not in Block.parse!("127.0.0.0/8")
+      refute BitwiseIp.parse!("::1") in Block.parse!("0.0.0.0/0")
+      refute {127, 0, 0, 1} in Block.parse!("127.0.0.0/8")
+    end
+
+    test "IPv6 membership" do
+      assert BitwiseIp.parse!("f7::12") in Block.parse!("f7::/64")
+      assert BitwiseIp.parse!("f9::ff") not in Block.parse!("f7::/64")
+      refute BitwiseIp.parse!("127.0.0.1") in Block.parse!("::/0")
+      refute {0, 0, 0, 0, 0, 0, 0, 1} in Block.parse!("::1/128")
+    end
+
+    test "count IPv4" do
+      for mask <- 0..32 do
+        count = :math.pow(2, 32 - mask)
+        assert Block.parse!("1.2.3.4/#{mask}") |> Enum.count() == count
+      end
+    end
+
+    test "count IPv6" do
+      for mask <- 0..128 do
+        count = :math.pow(2, 128 - mask)
+        assert Block.parse!("::/#{mask}") |> Enum.count() == count
+      end
+    end
+
+    test "slice IPv4" do
+      block = Block.parse!("1.2.3.0/29")
+      assert Enum.at(block, 0) == BitwiseIp.parse!("1.2.3.0")
+      assert Enum.at(block, 1) == BitwiseIp.parse!("1.2.3.1")
+      assert Enum.at(block, 2) == BitwiseIp.parse!("1.2.3.2")
+      assert Enum.at(block, 3) == BitwiseIp.parse!("1.2.3.3")
+      assert Enum.at(block, 4) == BitwiseIp.parse!("1.2.3.4")
+      assert Enum.at(block, 5) == BitwiseIp.parse!("1.2.3.5")
+      assert Enum.at(block, 6) == BitwiseIp.parse!("1.2.3.6")
+      assert Enum.at(block, 7) == BitwiseIp.parse!("1.2.3.7")
+      assert Enum.at(block, 8) == nil
+    end
+
+    test "slice IPv6" do
+      block = Block.parse!("a:b:c:d:e:f:7::/125")
+      assert Enum.at(block, 0) == BitwiseIp.parse!("a:b:c:d:e:f:7:0")
+      assert Enum.at(block, 1) == BitwiseIp.parse!("a:b:c:d:e:f:7:1")
+      assert Enum.at(block, 2) == BitwiseIp.parse!("a:b:c:d:e:f:7:2")
+      assert Enum.at(block, 3) == BitwiseIp.parse!("a:b:c:d:e:f:7:3")
+      assert Enum.at(block, 4) == BitwiseIp.parse!("a:b:c:d:e:f:7:4")
+      assert Enum.at(block, 5) == BitwiseIp.parse!("a:b:c:d:e:f:7:5")
+      assert Enum.at(block, 6) == BitwiseIp.parse!("a:b:c:d:e:f:7:6")
+      assert Enum.at(block, 7) == BitwiseIp.parse!("a:b:c:d:e:f:7:7")
+      assert Enum.at(block, 8) == nil
+    end
+
+    test "reduce IPv4" do
+      block = Block.parse!("1.2.3.0/24")
+
+      assert Enum.take(block, 3) == [
+               BitwiseIp.parse!("1.2.3.0"),
+               BitwiseIp.parse!("1.2.3.1"),
+               BitwiseIp.parse!("1.2.3.2")
+             ]
+    end
+
+    test "reduce IPv6" do
+      block = Block.parse!("a::/16")
+
+      assert Enum.take(block, 3) == [
+               BitwiseIp.parse!("a::0"),
+               BitwiseIp.parse!("a::1"),
+               BitwiseIp.parse!("a::2")
+             ]
+    end
+  end
 end
