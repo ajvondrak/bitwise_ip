@@ -5,7 +5,7 @@ defmodule BitwiseIp.MixProject do
     [
       app: :bitwise_ip,
       version: "0.1.0",
-      elixir: "~> 1.11"
+      elixir: "~> 1.7"
     ]
   end
 
