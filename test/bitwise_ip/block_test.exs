@@ -390,6 +390,7 @@ defmodule BitwiseIp.BlockTest do
 
     test "slice IPv4" do
       block = Block.parse!("1.2.3.0/29")
+
       assert Enum.at(block, 0) == BitwiseIp.parse!("1.2.3.0")
       assert Enum.at(block, 1) == BitwiseIp.parse!("1.2.3.1")
       assert Enum.at(block, 2) == BitwiseIp.parse!("1.2.3.2")
@@ -399,10 +400,17 @@ defmodule BitwiseIp.BlockTest do
       assert Enum.at(block, 6) == BitwiseIp.parse!("1.2.3.6")
       assert Enum.at(block, 7) == BitwiseIp.parse!("1.2.3.7")
       assert Enum.at(block, 8) == nil
+
+      assert Enum.slice(block, 3..5) == [
+               BitwiseIp.parse!("1.2.3.3"),
+               BitwiseIp.parse!("1.2.3.4"),
+               BitwiseIp.parse!("1.2.3.5")
+             ]
     end
 
     test "slice IPv6" do
       block = Block.parse!("a:b:c:d:e:f:7::/125")
+
       assert Enum.at(block, 0) == BitwiseIp.parse!("a:b:c:d:e:f:7:0")
       assert Enum.at(block, 1) == BitwiseIp.parse!("a:b:c:d:e:f:7:1")
       assert Enum.at(block, 2) == BitwiseIp.parse!("a:b:c:d:e:f:7:2")
@@ -412,25 +420,37 @@ defmodule BitwiseIp.BlockTest do
       assert Enum.at(block, 6) == BitwiseIp.parse!("a:b:c:d:e:f:7:6")
       assert Enum.at(block, 7) == BitwiseIp.parse!("a:b:c:d:e:f:7:7")
       assert Enum.at(block, 8) == nil
+
+      assert Enum.slice(block, 3..5) == [
+               BitwiseIp.parse!("a:b:c:d:e:f:7:3"),
+               BitwiseIp.parse!("a:b:c:d:e:f:7:4"),
+               BitwiseIp.parse!("a:b:c:d:e:f:7:5")
+             ]
     end
 
     test "reduce IPv4" do
-      block = Block.parse!("1.2.3.0/24")
+      block = Block.parse!("1.2.3.0/30")
 
-      assert Enum.take(block, 3) == [
+      assert Stream.cycle(block) |> Enum.take(8) == [
                BitwiseIp.parse!("1.2.3.0"),
                BitwiseIp.parse!("1.2.3.1"),
-               BitwiseIp.parse!("1.2.3.2")
+               BitwiseIp.parse!("1.2.3.2"),
+               BitwiseIp.parse!("1.2.3.3"),
+               BitwiseIp.parse!("1.2.3.0"),
+               BitwiseIp.parse!("1.2.3.1"),
+               BitwiseIp.parse!("1.2.3.2"),
+               BitwiseIp.parse!("1.2.3.3")
              ]
     end
 
     test "reduce IPv6" do
-      block = Block.parse!("a::/16")
+      block = Block.parse!("a::/127")
 
-      assert Enum.take(block, 3) == [
+      assert Stream.cycle(block) |> Enum.take(4) == [
                BitwiseIp.parse!("a::0"),
                BitwiseIp.parse!("a::1"),
-               BitwiseIp.parse!("a::2")
+               BitwiseIp.parse!("a::0"),
+               BitwiseIp.parse!("a::1")
              ]
     end
   end

@@ -11,7 +11,17 @@ defmodule BitwiseIp.MixProject do
         files: ~w[lib mix.exs README.md LICENSE],
         licenses: ["MIT"],
         links: %{"GitHub" => "https://github.com/ajvondrak/bitwise_ip"}
-      }
+      },
+      deps: [
+        {:excoveralls, "~> 0.14", only: [:test], runtime: false}
+      ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
