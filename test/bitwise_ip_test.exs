@@ -7,8 +7,8 @@ defmodule BitwiseIpTest do
       assert {:error, _} = BitwiseIp.parse("3.14")
 
       assert {:ok, ip} = BitwiseIp.parse("192.168.0.1")
-      assert ip.protocol == :v4
-      assert ip.address == :binary.decode_unsigned(<<192, 168, 0, 1>>)
+      assert ip.proto == :v4
+      assert ip.addr == :binary.decode_unsigned(<<192, 168, 0, 1>>)
     end
 
     test "parse!/1" do
@@ -21,13 +21,13 @@ defmodule BitwiseIpTest do
 
     test "encode/1" do
       ip = BitwiseIp.encode({3, 14, 15, 92})
-      assert ip.protocol == :v4
-      assert ip.address == :binary.decode_unsigned(<<3, 14, 15, 92>>)
+      assert ip.proto == :v4
+      assert ip.addr == :binary.decode_unsigned(<<3, 14, 15, 92>>)
     end
 
     test "decode/1" do
-      address = :binary.decode_unsigned(<<3, 14, 15, 92>>)
-      ip = %BitwiseIp{protocol: :v4, address: address}
+      addr = :binary.decode_unsigned(<<3, 14, 15, 92>>)
+      ip = %BitwiseIp{proto: :v4, addr: addr}
       assert BitwiseIp.decode(ip) == {3, 14, 15, 92}
     end
 
@@ -43,8 +43,8 @@ defmodule BitwiseIpTest do
       assert {:error, _} = BitwiseIp.parse("a::g")
 
       assert {:ok, ip} = BitwiseIp.parse("a::f")
-      assert ip.protocol == :v6
-      assert ip.address == :binary.decode_unsigned(<<0x000A::16, 0::16, 0::16, 0::16, 0::16, 0::16, 0::16, 0x000F::16>>)
+      assert ip.proto == :v6
+      assert ip.addr == :binary.decode_unsigned(<<0x000A::16, 0::16, 0::16, 0::16, 0::16, 0::16, 0::16, 0x000F::16>>)
     end
 
     test "parse!/1" do
@@ -57,13 +57,13 @@ defmodule BitwiseIpTest do
 
     test "encode/1" do
       ip = BitwiseIp.encode({3, 14, 15, 92, 65, 35, 89, 79})
-      assert ip.protocol == :v6
-      assert ip.address == :binary.decode_unsigned(<<3::16, 14::16, 15::16, 92::16, 65::16, 35::16, 89::16, 79::16>>)
+      assert ip.proto == :v6
+      assert ip.addr == :binary.decode_unsigned(<<3::16, 14::16, 15::16, 92::16, 65::16, 35::16, 89::16, 79::16>>)
     end
 
     test "decode/1" do
-      address = :binary.decode_unsigned(<<3::16, 14::16, 15::16, 92::16, 65::16, 35::16, 89::16, 79::16>>)
-      ip = %BitwiseIp{protocol: :v6, address: address}
+      addr = :binary.decode_unsigned(<<3::16, 14::16, 15::16, 92::16, 65::16, 35::16, 89::16, 79::16>>)
+      ip = %BitwiseIp{proto: :v6, addr: addr}
       assert BitwiseIp.decode(ip) == {3, 14, 15, 92, 65, 35, 89, 79}
     end
 

@@ -96,12 +96,12 @@ defmodule BitwiseIp.BlockTest do
       octets = {a, b, c, d} = ipv4()
       ip = as_string(octets)
 
-      prefix_z = BitwiseIp.encode({0, 0, 0, 0})
-      prefix_a = BitwiseIp.encode({a, 0, 0, 0})
-      prefix_b = BitwiseIp.encode({a, b, 0, 0})
-      prefix_c = BitwiseIp.encode({a, b, c, 0})
-      prefix_d = BitwiseIp.encode({a, b, c, d})
-      prefix_x = BitwiseIp.encode({a, :erlang.band(b, 0b11110000), 0, 0})
+      addr_z = BitwiseIp.encode({0, 0, 0, 0}).addr
+      addr_a = BitwiseIp.encode({a, 0, 0, 0}).addr
+      addr_b = BitwiseIp.encode({a, b, 0, 0}).addr
+      addr_c = BitwiseIp.encode({a, b, c, 0}).addr
+      addr_d = BitwiseIp.encode({a, b, c, d}).addr
+      addr_x = BitwiseIp.encode({a, :erlang.band(b, 0b11110000), 0, 0}).addr
 
       mask_z = Mask.encode(:v4, 0)
       mask_a = Mask.encode(:v4, 8)
@@ -110,28 +110,28 @@ defmodule BitwiseIp.BlockTest do
       mask_d = Mask.encode(:v4, 32)
       mask_x = Mask.encode(:v4, 12)
 
-      assert %Block{prefix: prefix_z, mask: mask_z} == Block.parse!("#{ip}/0")
-      assert %Block{prefix: prefix_a, mask: mask_a} == Block.parse!("#{ip}/8")
-      assert %Block{prefix: prefix_b, mask: mask_b} == Block.parse!("#{ip}/16")
-      assert %Block{prefix: prefix_c, mask: mask_c} == Block.parse!("#{ip}/24")
-      assert %Block{prefix: prefix_d, mask: mask_d} == Block.parse!("#{ip}/32")
-      assert %Block{prefix: prefix_x, mask: mask_x} == Block.parse!("#{ip}/12")
+      assert %Block{proto: :v4, addr: addr_z, mask: mask_z} == Block.parse!("#{ip}/0")
+      assert %Block{proto: :v4, addr: addr_a, mask: mask_a} == Block.parse!("#{ip}/8")
+      assert %Block{proto: :v4, addr: addr_b, mask: mask_b} == Block.parse!("#{ip}/16")
+      assert %Block{proto: :v4, addr: addr_c, mask: mask_c} == Block.parse!("#{ip}/24")
+      assert %Block{proto: :v4, addr: addr_d, mask: mask_d} == Block.parse!("#{ip}/32")
+      assert %Block{proto: :v4, addr: addr_x, mask: mask_x} == Block.parse!("#{ip}/12")
     end
 
     test "IPv6 address with mask" do
       hextets = {a, b, c, d, e, f, g, h} = ipv6()
       ip = as_string(hextets)
 
-      prefix_z = BitwiseIp.encode({0, 0, 0, 0, 0, 0, 0, 0})
-      prefix_a = BitwiseIp.encode({a, 0, 0, 0, 0, 0, 0, 0})
-      prefix_b = BitwiseIp.encode({a, b, 0, 0, 0, 0, 0, 0})
-      prefix_c = BitwiseIp.encode({a, b, c, 0, 0, 0, 0, 0})
-      prefix_d = BitwiseIp.encode({a, b, c, d, 0, 0, 0, 0})
-      prefix_e = BitwiseIp.encode({a, b, c, d, e, 0, 0, 0})
-      prefix_f = BitwiseIp.encode({a, b, c, d, e, f, 0, 0})
-      prefix_g = BitwiseIp.encode({a, b, c, d, e, f, g, 0})
-      prefix_h = BitwiseIp.encode({a, b, c, d, e, f, g, h})
-      prefix_x = BitwiseIp.encode({a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0})
+      addr_z = BitwiseIp.encode({0, 0, 0, 0, 0, 0, 0, 0}).addr
+      addr_a = BitwiseIp.encode({a, 0, 0, 0, 0, 0, 0, 0}).addr
+      addr_b = BitwiseIp.encode({a, b, 0, 0, 0, 0, 0, 0}).addr
+      addr_c = BitwiseIp.encode({a, b, c, 0, 0, 0, 0, 0}).addr
+      addr_d = BitwiseIp.encode({a, b, c, d, 0, 0, 0, 0}).addr
+      addr_e = BitwiseIp.encode({a, b, c, d, e, 0, 0, 0}).addr
+      addr_f = BitwiseIp.encode({a, b, c, d, e, f, 0, 0}).addr
+      addr_g = BitwiseIp.encode({a, b, c, d, e, f, g, 0}).addr
+      addr_h = BitwiseIp.encode({a, b, c, d, e, f, g, h}).addr
+      addr_x = BitwiseIp.encode({a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0}).addr
 
       mask_z = Mask.encode(:v6, 0)
       mask_a = Mask.encode(:v6, 16)
@@ -144,16 +144,16 @@ defmodule BitwiseIp.BlockTest do
       mask_h = Mask.encode(:v6, 128)
       mask_x = Mask.encode(:v6, 65)
 
-      assert %Block{prefix: prefix_z, mask: mask_z} == Block.parse!("#{ip}/0")
-      assert %Block{prefix: prefix_a, mask: mask_a} == Block.parse!("#{ip}/16")
-      assert %Block{prefix: prefix_b, mask: mask_b} == Block.parse!("#{ip}/32")
-      assert %Block{prefix: prefix_c, mask: mask_c} == Block.parse!("#{ip}/48")
-      assert %Block{prefix: prefix_d, mask: mask_d} == Block.parse!("#{ip}/64")
-      assert %Block{prefix: prefix_e, mask: mask_e} == Block.parse!("#{ip}/80")
-      assert %Block{prefix: prefix_f, mask: mask_f} == Block.parse!("#{ip}/96")
-      assert %Block{prefix: prefix_g, mask: mask_g} == Block.parse!("#{ip}/112")
-      assert %Block{prefix: prefix_h, mask: mask_h} == Block.parse!("#{ip}/128")
-      assert %Block{prefix: prefix_x, mask: mask_x} == Block.parse!("#{ip}/65")
+      assert %Block{proto: :v6, addr: addr_z, mask: mask_z} == Block.parse!("#{ip}/0")
+      assert %Block{proto: :v6, addr: addr_a, mask: mask_a} == Block.parse!("#{ip}/16")
+      assert %Block{proto: :v6, addr: addr_b, mask: mask_b} == Block.parse!("#{ip}/32")
+      assert %Block{proto: :v6, addr: addr_c, mask: mask_c} == Block.parse!("#{ip}/48")
+      assert %Block{proto: :v6, addr: addr_d, mask: mask_d} == Block.parse!("#{ip}/64")
+      assert %Block{proto: :v6, addr: addr_e, mask: mask_e} == Block.parse!("#{ip}/80")
+      assert %Block{proto: :v6, addr: addr_f, mask: mask_f} == Block.parse!("#{ip}/96")
+      assert %Block{proto: :v6, addr: addr_g, mask: mask_g} == Block.parse!("#{ip}/112")
+      assert %Block{proto: :v6, addr: addr_h, mask: mask_h} == Block.parse!("#{ip}/128")
+      assert %Block{proto: :v6, addr: addr_x, mask: mask_x} == Block.parse!("#{ip}/65")
     end
   end
 
