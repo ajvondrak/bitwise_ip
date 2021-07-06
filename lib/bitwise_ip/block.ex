@@ -1,9 +1,14 @@
 defmodule BitwiseIp.Block do
-  use Bitwise
-
   defstruct [:proto, :addr, :mask]
 
+  use Bitwise
   alias __MODULE__
+
+  @type t() :: v4() | v6()
+  @type v4() :: %Block{proto: :v4, addr: integer(), mask: integer()}
+  @type v6() :: %Block{proto: :v6, addr: integer(), mask: integer()}
+
+  @spec member?(t(), BitwiseIp.t()) :: boolean()
 
   def member?(
         %Block{proto: proto, addr: prefix, mask: mask},
@@ -15,6 +20,8 @@ defmodule BitwiseIp.Block do
   def member?(_, _) do
     false
   end
+
+  @spec contains?(t(), t()) :: boolean()
 
   def contains?(
         %Block{proto: proto, addr: prefix, mask: mask},
@@ -28,6 +35,8 @@ defmodule BitwiseIp.Block do
     false
   end
 
+  @spec size(t()) :: integer()
+
   for mask <- 0..32, mask = BitwiseIp.Mask.encode(:v4, mask) do
     size = :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
     def size(%Block{proto: :v4, mask: unquote(mask)}), do: unquote(size)
@@ -38,12 +47,16 @@ defmodule BitwiseIp.Block do
     def size(%Block{proto: :v6, mask: unquote(mask)}), do: unquote(size)
   end
 
+  @spec parse!(String.t()) :: t()
+
   def parse!(cidr) do
     case parse(cidr) do
       {:ok, block} -> block
       {:error, message} -> raise ArgumentError, message
     end
   end
+
+  @spec parse(String.t()) :: {:ok, t()} | {:error, String.t()}
 
   def parse(cidr) do
     case parse_with_or_without_mask(cidr) do

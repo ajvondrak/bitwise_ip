@@ -22,6 +22,12 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 bitwise_ip-*.tar
 
-
 # Temporary files for e.g. tests
 /tmp
+
+# Dialyzer's Persistent Lookup Tables (PLTs) cache expensive analyses, but they
+# change depending on the version of Elixir/OTP, so we don't want to commit the
+# outputs directly to version control. E.g., having one version's PLTs could
+# mess up continuous integration on a different version.
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
