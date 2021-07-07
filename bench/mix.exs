@@ -20,6 +20,7 @@ defmodule Bench.MixProject do
     [
       {:benchee, "~> 1.0"},
       {:benchee_html, "~> 1.0"},
+      {:ip, "~> 1.1"},
       {:inet_cidr, "~> 1.0"},
       {:cidr, "~> 1.0"},
       {:cider, "~> 0.3"},

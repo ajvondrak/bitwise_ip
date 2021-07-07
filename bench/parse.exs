@@ -3,6 +3,7 @@ Bench.Inputs.seed
 cidrs = Bench.Inputs.cidrs(1_000)
 
 suite = %{
+  ip: fn -> Enum.each(cidrs, &IP.Prefix.from_string!/1) end,
   bitwise_ip: fn -> Enum.each(cidrs, &BitwiseIp.Block.parse!/1) end,
   remote_ip: fn -> Enum.each(cidrs, &RemoteIp.Block.parse!/1) end,
   inet_cidr: fn -> Enum.each(cidrs, &InetCidr.parse(&1, true)) end,
