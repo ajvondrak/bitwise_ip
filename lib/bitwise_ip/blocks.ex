@@ -1,23 +1,25 @@
 defmodule BitwiseIp.Blocks do
-  @spec contain?([BitwiseIp.Block.t()], BitwiseIp.t()) :: boolean()
+  @type t() :: [BitwiseIp.Block.t()]
+
+  @spec contain?(t(), BitwiseIp.t()) :: boolean()
 
   def contain?(blocks, %BitwiseIp{} = ip) do
     Enum.any?(blocks, &BitwiseIp.Block.member?(&1, ip))
   end
 
-  @spec contain?([BitwiseIp.Block.t()], :inet.ip_address()) :: boolean()
+  @spec contain?(t(), :inet.ip_address()) :: boolean()
 
   def contain?(blocks, ip) do
     contain?(blocks, BitwiseIp.encode(ip))
   end
 
-  @spec parse!([String.t()]) :: [BitwiseIp.Block.t()]
+  @spec parse!([String.t()]) :: t()
 
   def parse!(cidrs) do
     Enum.map(cidrs, &BitwiseIp.Block.parse!/1)
   end
 
-  @spec parse([String.t()]) :: [BitwiseIp.Block.t()]
+  @spec parse([String.t()]) :: t()
 
   def parse([cidr | cidrs]) do
     case BitwiseIp.Block.parse(cidr) do
@@ -30,7 +32,7 @@ defmodule BitwiseIp.Blocks do
     []
   end
 
-  @spec optimize([BitwiseIp.Block.t()]) :: [BitwiseIp.Block.t()]
+  @spec optimize(t()) :: t()
 
   def optimize(blocks) do
     case try_to_optimize(blocks) do
