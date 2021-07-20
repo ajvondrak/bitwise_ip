@@ -37,14 +37,12 @@ defmodule BitwiseIp.Block do
 
   @spec size(t()) :: integer()
 
-  for mask <- 0..32, mask = BitwiseIp.Mask.encode(:v4, mask) do
-    size = :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
-    def size(%Block{proto: :v4, mask: unquote(mask)}), do: unquote(size)
+  def size(%Block{proto: :v4, mask: mask}) do
+    :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
   end
 
-  for mask <- 0..128, mask = BitwiseIp.Mask.encode(:v6, mask) do
-    size = :binary.decode_unsigned(<<(~~~mask)::128>>) + 1
-    def size(%Block{proto: :v6, mask: unquote(mask)}), do: unquote(size)
+  def size(%Block{proto: :v6, mask: mask}) do
+    :binary.decode_unsigned(<<(~~~mask)::128>>) + 1
   end
 
   @spec parse!(String.t()) :: t()
