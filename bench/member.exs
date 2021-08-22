@@ -56,7 +56,7 @@ suite = %{
 }
 
 formatters = [
-  {Benchee.Formatters.HTML, file: "tmp/check.html", auto_open: false},
+  {Benchee.Formatters.HTML, file: "tmp/member.html", auto_open: false},
   Benchee.Formatters.Console,
 ]
 
