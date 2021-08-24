@@ -12,41 +12,41 @@ defmodule BitwiseIp.BlocksTest do
     192.168.0.0/16
   ]
 
-  describe "contain?/2" do
+  describe "member?/2" do
     test "with a %BitwiseIp{}" do
       blocks = Blocks.parse!(@reserved)
 
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("127.0.0.1"))
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("::1"))
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("fc12::"))
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("10.20.30.40"))
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("172.16.10.1"))
-      assert Blocks.contain?(blocks, BitwiseIp.parse!("192.168.0.1"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("127.0.0.1"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("::1"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("fc12::"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("10.20.30.40"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("172.16.10.1"))
+      assert Blocks.member?(blocks, BitwiseIp.parse!("192.168.0.1"))
 
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("1.2.3.4"))
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("::2"))
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("f7::12"))
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("11.0.0.1"))
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("172.168.0.1"))
-      refute Blocks.contain?(blocks, BitwiseIp.parse!("192.16.10.1"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("1.2.3.4"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("::2"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("f7::12"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("11.0.0.1"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("172.168.0.1"))
+      refute Blocks.member?(blocks, BitwiseIp.parse!("192.16.10.1"))
     end
 
     test "with an :inet.ip_address()" do
       blocks = Blocks.parse!(@reserved)
 
-      assert Blocks.contain?(blocks, {127, 0, 0, 1})
-      assert Blocks.contain?(blocks, {0, 0, 0, 0, 0, 0, 0, 1})
-      assert Blocks.contain?(blocks, {0xFC12, 0, 0, 0, 0, 0, 0, 0})
-      assert Blocks.contain?(blocks, {10, 20, 30, 40})
-      assert Blocks.contain?(blocks, {172, 16, 10, 1})
-      assert Blocks.contain?(blocks, {192, 168, 0, 1})
+      assert Blocks.member?(blocks, {127, 0, 0, 1})
+      assert Blocks.member?(blocks, {0, 0, 0, 0, 0, 0, 0, 1})
+      assert Blocks.member?(blocks, {0xFC12, 0, 0, 0, 0, 0, 0, 0})
+      assert Blocks.member?(blocks, {10, 20, 30, 40})
+      assert Blocks.member?(blocks, {172, 16, 10, 1})
+      assert Blocks.member?(blocks, {192, 168, 0, 1})
 
-      refute Blocks.contain?(blocks, {1, 2, 3, 4})
-      refute Blocks.contain?(blocks, {0, 0, 0, 0, 0, 0, 0, 2})
-      refute Blocks.contain?(blocks, {0xF700, 0, 0, 0, 0, 0, 0, 0x0012})
-      refute Blocks.contain?(blocks, {11, 0, 0, 1})
-      refute Blocks.contain?(blocks, {172, 168, 0, 1})
-      refute Blocks.contain?(blocks, {192, 16, 10, 1})
+      refute Blocks.member?(blocks, {1, 2, 3, 4})
+      refute Blocks.member?(blocks, {0, 0, 0, 0, 0, 0, 0, 2})
+      refute Blocks.member?(blocks, {0xF700, 0, 0, 0, 0, 0, 0, 0x0012})
+      refute Blocks.member?(blocks, {11, 0, 0, 1})
+      refute Blocks.member?(blocks, {172, 168, 0, 1})
+      refute Blocks.member?(blocks, {192, 16, 10, 1})
     end
   end
 

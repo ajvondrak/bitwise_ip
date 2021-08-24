@@ -34,7 +34,7 @@ defmodule BitwiseIp.Blocks do
   Whereas bitwise IP blocks have a straightforward binary representation, a
   list of blocks is somewhat more unwieldy. This module provides utility
   functions that make handling these lists more ergonomic. In particular, the
-  `contain?/2` function helps you avoid a common performance pitfall.
+  `member?/2` function helps you avoid a common performance pitfall.
   """
 
   @typedoc """
@@ -91,8 +91,8 @@ defmodule BitwiseIp.Blocks do
   ip = {127, 0, 0, 1}
   encoded = BitwiseIp.encode(ip)
 
-  BitwiseIp.Blocks.contain?(blocks1, encoded) # check the first list
-  BitwiseIp.Blocks.contain?(blocks2, encoded) # check the second list
+  BitwiseIp.Blocks.member?(blocks1, encoded) # check the first list
+  BitwiseIp.Blocks.member?(blocks2, encoded) # check the second list
   ```
 
   ## Examples
@@ -100,36 +100,36 @@ defmodule BitwiseIp.Blocks do
   ```
   iex> ["1.2.0.0/16", "3.4.0.0/16", "5.6.0.0/16"]
   ...> |> Enum.map(&BitwiseIp.Block.parse!/1)
-  ...> |> BitwiseIp.Blocks.contain?({1, 2, 3, 4})
+  ...> |> BitwiseIp.Blocks.member?({1, 2, 3, 4})
   true
 
   iex> ["1.2.0.0/16", "3.4.0.0/16", "5.6.0.0/16"]
   ...> |> Enum.map(&BitwiseIp.Block.parse!/1)
-  ...> |> BitwiseIp.Blocks.contain?({7, 8, 9, 10})
+  ...> |> BitwiseIp.Blocks.member?({7, 8, 9, 10})
   false
 
   iex> ["1.2.0.0/16", "3.4.0.0/16", "5.6.0.0/16"]
   ...> |> Enum.map(&BitwiseIp.Block.parse!/1)
-  ...> |> BitwiseIp.Blocks.contain?(BitwiseIp.encode({1, 2, 3, 4}))
+  ...> |> BitwiseIp.Blocks.member?(BitwiseIp.encode({1, 2, 3, 4}))
   true
 
   iex> ["1.2.0.0/16", "3.4.0.0/16", "5.6.0.0/16"]
   ...> |> Enum.map(&BitwiseIp.Block.parse!/1)
-  ...> |> BitwiseIp.Blocks.contain?(BitwiseIp.encode({7, 8, 9, 10}))
+  ...> |> BitwiseIp.Blocks.member?(BitwiseIp.encode({7, 8, 9, 10}))
   false
   ```
   """
 
-  @spec contain?(t(), BitwiseIp.t()) :: boolean()
+  @spec member?(t(), BitwiseIp.t()) :: boolean()
 
-  def contain?(blocks, %BitwiseIp{} = ip) do
+  def member?(blocks, %BitwiseIp{} = ip) do
     Enum.any?(blocks, &BitwiseIp.Block.member?(&1, ip))
   end
 
-  @spec contain?(t(), :inet.ip_address()) :: boolean()
+  @spec member?(t(), :inet.ip_address()) :: boolean()
 
-  def contain?(blocks, ip) do
-    contain?(blocks, BitwiseIp.encode(ip))
+  def member?(blocks, ip) do
+    member?(blocks, BitwiseIp.encode(ip))
   end
 
   @doc """
@@ -201,16 +201,16 @@ defmodule BitwiseIp.Blocks do
   end
 
   @doc """
-  Computes an equivalent list of blocks optimal for `contain?/2`.
+  Computes an equivalent list of blocks optimal for `member?/2`.
 
   While an individual `BitwiseIp.Block.member?/2` call is already efficient,
-  the performance of `contain?/2` is sensitive to a couple of factors:
+  the performance of `member?/2` is sensitive to a couple of factors:
 
   1. The size of the list matters, since a smaller list requires fewer
      individual checks.
 
-  2. The order of the elements in the list matters, since `contain?/2` will
-     exit early as soon as any individual check returns true.
+  2. The order of the elements in the list matters, since `member?/2` will exit
+     early as soon as any individual check returns true.
 
   To optimize for the size of the list, this function recursively merges any
   two blocks where one is a subset of the other. This is tested using
