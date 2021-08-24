@@ -214,7 +214,7 @@ defmodule BitwiseIp.Blocks do
 
   To optimize for the size of the list, this function recursively merges any
   two blocks where one is a subset of the other. This is tested using
-  `BitwiseIp.Block.contains?/2`. For example, `1.2.0.0/16` is a subset of
+  `BitwiseIp.Block.subnet?/2`. For example, `1.2.0.0/16` is a subset of
   `1.0.0.0/8`, so instead of calling `BitwiseIp.Block.member?/2` on both of
   them, we can simply check the larger range of the two - in this case,
   `1.0.0.0/8`.
@@ -283,8 +283,8 @@ defmodule BitwiseIp.Blocks do
 
   defp try_to_merge(a, [b | unvisited], visited) do
     cond do
-      BitwiseIp.Block.contains?(a, b) -> {:success, [a | unvisited] ++ visited}
-      BitwiseIp.Block.contains?(b, a) -> {:success, [b | unvisited] ++ visited}
+      BitwiseIp.Block.subnet?(a, b) -> {:success, [a | unvisited] ++ visited}
+      BitwiseIp.Block.subnet?(b, a) -> {:success, [b | unvisited] ++ visited}
       true -> try_to_merge(a, unvisited, [b | visited])
     end
   end

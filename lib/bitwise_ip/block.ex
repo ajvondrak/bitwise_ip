@@ -165,28 +165,28 @@ defmodule BitwiseIp.Block do
 
   ```
   iex> BitwiseIp.Block.parse!("1.0.0.0/8")
-  ...> |> BitwiseIp.Block.contains?(BitwiseIp.Block.parse!("1.2.0.0/16"))
+  ...> |> BitwiseIp.Block.subnet?(BitwiseIp.Block.parse!("1.2.0.0/16"))
   true
 
   iex> BitwiseIp.Block.parse!("1.2.0.0/16")
-  ...> |> BitwiseIp.Block.contains?(BitwiseIp.Block.parse!("1.0.0.0/8"))
+  ...> |> BitwiseIp.Block.subnet?(BitwiseIp.Block.parse!("1.0.0.0/8"))
   false
 
   iex> BitwiseIp.Block.parse!("1.2.0.0/16")
-  ...> |> BitwiseIp.Block.contains?(BitwiseIp.Block.parse!("1.2.0.0/16"))
+  ...> |> BitwiseIp.Block.subnet?(BitwiseIp.Block.parse!("1.2.0.0/16"))
   true
 
   iex> BitwiseIp.Block.parse!("1.2.0.0/16")
-  ...> |> BitwiseIp.Block.contains?(BitwiseIp.Block.parse!("2.3.0.0/16"))
+  ...> |> BitwiseIp.Block.subnet?(BitwiseIp.Block.parse!("2.3.0.0/16"))
   false
   ```
   """
 
-  @spec contains?(t(), t()) :: boolean()
+  @spec subnet?(t(), t()) :: boolean()
 
-  def contains?(block1, block2)
+  def subnet?(block1, block2)
 
-  def contains?(
+  def subnet?(
         %Block{proto: proto, addr: prefix, mask: mask},
         %Block{proto: proto, addr: ip, mask: submask}
       )
@@ -194,7 +194,7 @@ defmodule BitwiseIp.Block do
     prefix == (ip &&& mask)
   end
 
-  def contains?(_, _) do
+  def subnet?(_, _) do
     false
   end
 
