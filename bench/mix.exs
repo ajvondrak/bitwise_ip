@@ -24,7 +24,6 @@ defmodule Bench.MixProject do
       {:inet_cidr, "~> 1.0"},
       {:cidr, "~> 1.0"},
       {:cider, "~> 0.3"},
-      {:remote_ip, "~> 1.0"},
       {:bitwise_ip, path: ".."}
     ]
   end
