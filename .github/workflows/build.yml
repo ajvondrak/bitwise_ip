@@ -1,0 +1,94 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  MIX_ENV: ci
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - elixir: '1.7'
+            otp: '19'
+          - elixir: '1.8'
+            otp: '20'
+          - elixir: '1.9'
+            otp: '20'
+          - elixir: '1.10'
+            otp: '21'
+          - elixir: '1.11'
+            otp: '21'
+          - elixir: '1.12'
+            otp: '22'
+          - elixir: '1.12'
+            otp: '24'
+
+    name: Elixir ${{ matrix.elixir }} (OTP ${{ matrix.otp }})
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: install
+        name: Install Elixir
+        uses: erlef/setup-elixir@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - name: Restore cached build
+        uses: actions/cache@v2
+        with:
+          key: builds@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
+          path: |
+            deps
+            _build
+
+      - name: Install dependencies
+        run: mix do deps.get, deps.compile
+
+      - name: Check formatting
+        run: mix format --check-formatted
+
+      - name: Compile
+        run: mix compile --warnings-as-errors
+
+      - name: Run unit tests
+        run: mix coveralls.github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore cached integrations
+        uses: actions/cache@v2
+        with:
+          key: integrations@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('integration/tests/*/mix.lock') }}
+          path: |
+            integration/tests/*/deps
+            integration/tests/*/_build
+
+      - name: Run integration tests
+        run: mix integrate
+
+      - name: Restore cached PLTs
+        uses: actions/cache@v2
+        with:
+          key: plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
+          path: |
+            priv/plts
+          restore-keys: |
+            plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-
+
+      - name: Run dialyzer
+        run: mix dialyzer
