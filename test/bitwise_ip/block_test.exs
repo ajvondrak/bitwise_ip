@@ -428,30 +428,32 @@ defmodule BitwiseIp.BlockTest do
              ]
     end
 
-    test "reduce IPv4" do
-      block = Block.parse!("1.2.3.0/30")
+    def reducer(ip, acc) do
+      case ip.addr do
+        2 -> {:suspend, acc ++ [to_string(ip)]}
+        4 -> {:halt, acc ++ [to_string(ip)]}
+        _ -> {:cont, acc ++ [to_string(ip)]}
+      end
+    end
 
-      assert Stream.cycle(block) |> Enum.take(8) == [
-               BitwiseIp.parse!("1.2.3.0"),
-               BitwiseIp.parse!("1.2.3.1"),
-               BitwiseIp.parse!("1.2.3.2"),
-               BitwiseIp.parse!("1.2.3.3"),
-               BitwiseIp.parse!("1.2.3.0"),
-               BitwiseIp.parse!("1.2.3.1"),
-               BitwiseIp.parse!("1.2.3.2"),
-               BitwiseIp.parse!("1.2.3.3")
-             ]
+    test "reduce IPv4" do
+      block = Block.parse!("0.0.0.0/0")
+
+      {:suspended, acc, cont} = Enumerable.reduce(block, {:cont, []}, &reducer/2)
+      assert acc == ["0.0.0.0", "0.0.0.1", "0.0.0.2"]
+
+      {:halted, acc} = cont.({:cont, acc})
+      assert acc == ["0.0.0.0", "0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"]
     end
 
     test "reduce IPv6" do
-      block = Block.parse!("a::/127")
+      block = Block.parse!("::/0")
 
-      assert Stream.cycle(block) |> Enum.take(4) == [
-               BitwiseIp.parse!("a::0"),
-               BitwiseIp.parse!("a::1"),
-               BitwiseIp.parse!("a::0"),
-               BitwiseIp.parse!("a::1")
-             ]
+      {:suspended, acc, cont} = Enumerable.reduce(block, {:cont, []}, &reducer/2)
+      assert acc == ["::", "::1", "::0.0.0.2"]
+
+      {:halted, acc} = cont.({:cont, acc})
+      assert acc == ["::", "::1", "::0.0.0.2", "::0.0.0.3", "::0.0.0.4"]
     end
   end
 end
