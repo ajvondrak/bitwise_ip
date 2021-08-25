@@ -1,5 +1,10 @@
 # BitwiseIp
 
+[![build status](https://github.com/ajvondrak/bitwise_ip/workflows/build/badge.svg)](https://github.com/ajvondrak/bitwise_ip/actions?query=workflow%3Abuild)
+[![coverage status](https://coveralls.io/repos/github/ajvondrak/bitwise_ip/badge.svg?branch=main)](https://coveralls.io/github/ajvondrak/bitwise_ip?branch=main)
+<!-- [![hex.pm version](https://img.shields.io/hexpm/v/bitwise_ip)](https://hex.pm/packages/bitwise_ip) -->
+<!-- [![docs](https://img.shields.io/badge/docs-hexpm-blue.svg)](https://hexdocs.pm/bitwise_ip/) -->
+
 This library provides a bitwise representation of IP addresses and efficient operations on top of them.
 
 Whereas Erlang's [`:inet`](http://erlang.org/doc/man/inet.html) standard library represents IP addresses as tuples of integers like `{127, 0, 0, 1}`, bitwise\_ip encodes IP addresses as single integers. Using bitwise arithmetic then allows for an efficient implementation of [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) blocks and their related operations - from parsing, to membership checks, to the whole [`Enumerable`](https://hexdocs.pm/elixir/Enumerable.html) protocol.
