@@ -4,7 +4,7 @@ defmodule BitwiseIp.MixProject do
   def project do
     [
       app: :bitwise_ip,
-      version: "1.0.0",
+      version: "1.1.0",
       elixir: "~> 1.12",
       description: "Efficient IP address operations using bitwise arithmetic",
       package: %{
