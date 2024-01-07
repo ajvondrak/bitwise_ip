@@ -51,7 +51,7 @@ defmodule BitwiseIp.Block do
 
   defstruct [:proto, :addr, :mask]
 
-  use Bitwise
+  import Bitwise
   alias __MODULE__
 
   @typedoc """

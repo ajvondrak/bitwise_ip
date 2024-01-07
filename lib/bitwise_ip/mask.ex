@@ -19,7 +19,7 @@ defmodule BitwiseIp.Mask do
   anything other than the tacit function dispatch.
   """
 
-  use Bitwise
+  import Bitwise
 
   @doc """
   An error-raising variant of `parse/2`.
