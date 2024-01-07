@@ -1,5 +1,5 @@
 defmodule Compile do
-  use Bitwise
+  import Bitwise
   alias BitwiseIp.Block
 
   for mask <- 0..32, mask = BitwiseIp.Mask.encode(:v4, mask) do
@@ -14,7 +14,7 @@ defmodule Compile do
 end
 
 defmodule Run do
-  use Bitwise
+  import Bitwise
 
   def size(%BitwiseIp.Block{proto: :v4, mask: mask}) do
     :binary.decode_unsigned(<<(~~~mask)::32>>) + 1

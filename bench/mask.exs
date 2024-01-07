@@ -1,5 +1,5 @@
 defmodule Compile do
-  use Bitwise
+  import Bitwise
 
   @v4 0xFFFFFFFF
 
@@ -29,7 +29,7 @@ defmodule Compile do
 end
 
 defmodule Run do
-  use Bitwise
+  import Bitwise
 
   @v4 0xFFFFFFFF
   @v6 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
