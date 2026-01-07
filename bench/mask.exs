@@ -4,7 +4,7 @@ defmodule Compile do
   @v4 0xFFFFFFFF
 
   for decoded <- 0..32 do
-    <<encoded::32>> = <<(~~~(@v4 >>> decoded))::32>>
+    <<encoded::32>> = <<bnot(bsr(@v4 , decoded))::32>>
     def encode(:v4, unquote(decoded)), do: unquote(encoded)
     def decode(:v4, unquote(encoded)), do: unquote(decoded)
     def parse(:v4, unquote(to_string(decoded))), do: {:ok, unquote(encoded)}
@@ -13,7 +13,7 @@ defmodule Compile do
   @v6 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
   for decoded <- 0..128 do
-    <<encoded::128>> = <<(~~~(@v6 >>> decoded))::128>>
+    <<encoded::128>> = <<bnot(bsr(@v6 , decoded))::128>>
     def encode(:v6, unquote(decoded)), do: unquote(encoded)
     def decode(:v6, unquote(encoded)), do: unquote(decoded)
     def parse(:v6, unquote(to_string(decoded))), do: {:ok, unquote(encoded)}
@@ -35,12 +35,12 @@ defmodule Run do
   @v6 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
   def encode(:v4, decoded) do
-    <<encoded::32>> = <<(~~~(@v4 >>> decoded))::32>>
+    <<encoded::32>> = <<bnot(bsr(@v4 , decoded))::32>>
     encoded
   end
 
   def encode(:v6, decoded) do
-    <<encoded::128>> = <<(~~~(@v6 >>> decoded))::128>>
+    <<encoded::128>> = <<bnot(bsr(@v6 , decoded))::128>>
     encoded
   end
 

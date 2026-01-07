@@ -136,7 +136,7 @@ defmodule BitwiseIp.Block do
         %Block{proto: proto, addr: prefix, mask: mask},
         %BitwiseIp{proto: proto, addr: ip}
       ) do
-    prefix == (ip &&& mask)
+    prefix == band(ip, mask)
   end
 
   def member?(_, _) do
@@ -191,7 +191,7 @@ defmodule BitwiseIp.Block do
         %Block{proto: proto, addr: ip, mask: submask}
       )
       when mask <= submask do
-    prefix == (ip &&& mask)
+    prefix == band(ip, mask)
   end
 
   def subnet?(_, _) do
@@ -245,11 +245,11 @@ defmodule BitwiseIp.Block do
   @spec size(t()) :: integer()
 
   def size(%Block{proto: :v4, mask: mask}) do
-    :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
+    :binary.decode_unsigned(<<bnot(mask)::32>>) + 1
   end
 
   def size(%Block{proto: :v6, mask: mask}) do
-    :binary.decode_unsigned(<<(~~~mask)::128>>) + 1
+    :binary.decode_unsigned(<<bnot(mask)::128>>) + 1
   end
 
   @doc """
@@ -363,7 +363,7 @@ defmodule BitwiseIp.Block do
   defp parse_with_mask(ip, mask) do
     with {:ok, ip} <- BitwiseIp.parse(ip),
          {:ok, mask} <- BitwiseIp.Mask.parse(ip.proto, mask) do
-      {:ok, %Block{proto: ip.proto, addr: ip.addr &&& mask, mask: mask}}
+      {:ok, %Block{proto: ip.proto, addr: band(ip.addr, mask), mask: mask}}
     end
   end
 
