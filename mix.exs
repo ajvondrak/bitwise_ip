@@ -20,17 +20,22 @@ defmodule BitwiseIp.MixProject do
       ],
       docs: [source_url: "https://github.com/ajvondrak/bitwise_ip"],
       dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}],
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
+      test_coverage: [tool: ExCoveralls]
+    ]
+  end
+
+  def application do
+    [extra_applications: [:logger]]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test
       ]
     ]
-  end
-
-  def application do
-    [extra_applications: [:logger]]
   end
 end
