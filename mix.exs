@@ -13,10 +13,11 @@ defmodule BitwiseIp.MixProject do
         links: %{"GitHub" => "https://github.com/ajvondrak/bitwise_ip"}
       },
       deps: [
-        {:ex_doc, "~> 0.31", only: [:dev], runtime: false},
-        {:dialyxir, "~> 1.4", only: [:ci, :dev], runtime: false},
-        {:excoveralls, "~> 0.18", only: [:ci, :test], runtime: false},
-        {:castore, "~> 1.0", only: [:ci, :test], runtime: false}
+        {:ex_doc, "~> 0.39", only: [:dev], runtime: false},
+        {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+        {:excoveralls, "~> 0.18", only: [:test], runtime: false},
+        # Required for excoveralls network requests
+        {:castore, "~> 1.0", only: [:test], runtime: false}
       ],
       docs: [source_url: "https://github.com/ajvondrak/bitwise_ip"],
       dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}],
