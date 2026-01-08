@@ -407,17 +407,16 @@ defmodule BitwiseIp.BlockTest do
                BitwiseIp.parse!("1.2.3.5")
              ]
 
-      assert Enum.slice(block, 3..7//2) ==
-               [
-                 BitwiseIp.parse!("1.2.3.3"),
-                 BitwiseIp.parse!("1.2.3.5"),
-                 BitwiseIp.parse!("1.2.3.7")
-               ]
-
       assert Enum.slice(block, 3..7//2) == [
-               Enum.at(block, 3),
-               Enum.at(block, 5),
-               Enum.at(block, 7)
+               BitwiseIp.parse!("1.2.3.3"),
+               BitwiseIp.parse!("1.2.3.5"),
+               BitwiseIp.parse!("1.2.3.7")
+             ]
+
+      assert Enum.slice(block, 0..10//3) == [
+               BitwiseIp.parse!("1.2.3.0"),
+               BitwiseIp.parse!("1.2.3.3"),
+               BitwiseIp.parse!("1.2.3.6")
              ]
     end
 
@@ -446,10 +445,10 @@ defmodule BitwiseIp.BlockTest do
                BitwiseIp.parse!("a:b:c:d:e:f:7:7")
              ]
 
-      assert Enum.slice(block, 3..7//2) == [
-               Enum.at(block, 3),
-               Enum.at(block, 5),
-               Enum.at(block, 7)
+      assert Enum.slice(block, 0..10//3) == [
+               BitwiseIp.parse!("a:b:c:d:e:f:7:0"),
+               BitwiseIp.parse!("a:b:c:d:e:f:7:3"),
+               BitwiseIp.parse!("a:b:c:d:e:f:7:6")
              ]
     end
 

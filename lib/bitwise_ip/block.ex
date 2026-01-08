@@ -405,8 +405,9 @@ defmodule BitwiseIp.Block do
       [%BitwiseIp{proto: proto, addr: addr}]
     end
 
-    defp slice(proto, addr, n, s) do
-      [%BitwiseIp{proto: proto, addr: addr} | slice(proto, addr + s, n - 1, s)]
+    defp slice(proto, addr, n, step) do
+      next = %BitwiseIp{proto: proto, addr: addr}
+      [next | slice(proto, addr + step, n - 1, step)]
     end
 
     def reduce(%Block{proto: proto, addr: addr} = block, acc, fun) do
