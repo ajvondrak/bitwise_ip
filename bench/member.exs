@@ -1,4 +1,4 @@
-Bench.Inputs.seed
+Bench.Inputs.seed()
 
 ips = Bench.Inputs.ips(1_000)
 
@@ -7,7 +7,7 @@ parsed_ips = %{
   bitwise_ip: Enum.map(ips, &BitwiseIp.encode/1),
   inet_cidr: ips,
   cider: Enum.map(ips, &Cider.ip!/1),
-  cidr: ips,
+  cidr: ips
 }
 
 cidrs = Bench.Inputs.cidrs(1_000)
@@ -17,7 +17,7 @@ parsed_cidrs = %{
   bitwise_ip: Enum.map(cidrs, &BitwiseIp.Block.parse!/1),
   inet_cidr: Enum.map(cidrs, &InetCidr.parse(&1, true)),
   cider: Enum.map(cidrs, &Cider.parse/1),
-  cidr: Enum.map(cidrs, &CIDR.parse/1),
+  cidr: Enum.map(cidrs, &CIDR.parse/1)
 }
 
 suite = %{
@@ -45,12 +45,12 @@ suite = %{
     Enum.each(parsed_ips[:cidr], fn ip ->
       Enum.each(parsed_cidrs[:cidr], &CIDR.match(&1, ip))
     end)
-  end,
+  end
 }
 
 formatters = [
   {Benchee.Formatters.HTML, file: "tmp/member.html", auto_open: false},
-  Benchee.Formatters.Console,
+  Benchee.Formatters.Console
 ]
 
 Benchee.run(suite, formatters: formatters)

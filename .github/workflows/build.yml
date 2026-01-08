@@ -9,45 +9,55 @@ on:
     branches:
       - main
 
-env:
-  MIX_ENV: ci
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ci:
+    name: Elixir ${{ matrix.elixir }} (OTP ${{ matrix.otp }})
+
+    env:
+      MIX_ENV: test
+
     strategy:
       fail-fast: false
       matrix:
         include:
-          - elixir: '1.12'
-            otp: '22'
-          - elixir: '1.13'
-            otp: '22'
-          - elixir: '1.14'
-            otp: '23'
           - elixir: '1.15'
-            otp: '24'
-          - elixir: '1.16'
-            otp: '24'
-          - elixir: '1.16'
             otp: '26'
+          - elixir: '1.16'
+            otp: '27'
+          - elixir: '1.17'
+            otp: '27'
+          - elixir: '1.18'
+            otp: '27'
+          - elixir: '1.19'
+            otp: '28'
 
-    name: Elixir ${{ matrix.elixir }} (OTP ${{ matrix.otp }})
+    permissions:
+      contents: read
 
-    runs-on: ubuntu-20.04
+
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
 
       - id: install
         name: Install Elixir
-        uses: erlef/setup-beam@v1
+        uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{ matrix.otp }}
           elixir-version: ${{ matrix.elixir }}
 
       - name: Restore cached build
-        uses: actions/cache@v3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           key: builds@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
           path: |
@@ -66,10 +76,10 @@ jobs:
       - name: Run unit tests
         run: mix coveralls.github
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Restore cached PLTs
-        uses: actions/cache@v3
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           key: plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
           path: |
@@ -78,4 +88,4 @@ jobs:
             plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-
 
       - name: Run dialyzer
-        run: mix dialyzer
+        run: mix dialyzer --format github

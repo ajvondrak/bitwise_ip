@@ -2,10 +2,10 @@ defmodule BitwiseIp.Block do
   @moduledoc """
   A struct representing a range of bitwise IP addresses.
 
-  Since 1993, [classless inter-domain routing
-  (CIDR)](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) has
-  been the basis for allocating blocks of IP addresses and efficiently routing
-  between them.
+  Since 1993, [classless inter-domain routing (CIDR)][cidr] has been the basis
+  for allocating blocks of IP addresses and efficiently routing between them.
+
+  [cidr]: https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 
   If you think about the standard human-readable notation for IP addresses, a
   CIDR block is essentially a pattern with "wildcards" at the end. For example,
@@ -136,7 +136,7 @@ defmodule BitwiseIp.Block do
         %Block{proto: proto, addr: prefix, mask: mask},
         %BitwiseIp{proto: proto, addr: ip}
       ) do
-    prefix == (ip &&& mask)
+    prefix == band(ip, mask)
   end
 
   def member?(_, _) do
@@ -191,7 +191,7 @@ defmodule BitwiseIp.Block do
         %Block{proto: proto, addr: ip, mask: submask}
       )
       when mask <= submask do
-    prefix == (ip &&& mask)
+    prefix == band(ip, mask)
   end
 
   def subnet?(_, _) do
@@ -245,11 +245,11 @@ defmodule BitwiseIp.Block do
   @spec size(t()) :: integer()
 
   def size(%Block{proto: :v4, mask: mask}) do
-    :binary.decode_unsigned(<<(~~~mask)::32>>) + 1
+    :binary.decode_unsigned(<<bnot(mask)::32>>) + 1
   end
 
   def size(%Block{proto: :v6, mask: mask}) do
-    :binary.decode_unsigned(<<(~~~mask)::128>>) + 1
+    :binary.decode_unsigned(<<bnot(mask)::128>>) + 1
   end
 
   @doc """
@@ -363,7 +363,7 @@ defmodule BitwiseIp.Block do
   defp parse_with_mask(ip, mask) do
     with {:ok, ip} <- BitwiseIp.parse(ip),
          {:ok, mask} <- BitwiseIp.Mask.parse(ip.proto, mask) do
-      {:ok, %Block{proto: ip.proto, addr: ip.addr &&& mask, mask: mask}}
+      {:ok, %Block{proto: ip.proto, addr: band(ip.addr, mask), mask: mask}}
     end
   end
 
@@ -398,15 +398,15 @@ defmodule BitwiseIp.Block do
 
     def slice(%Block{proto: proto, addr: addr} = block) do
       size = Block.size(block)
-      {:ok, size, &slice(proto, addr + &1, &2)}
+      {:ok, size, &slice(proto, addr + &1, &2, &3)}
     end
 
-    defp slice(proto, addr, 1) do
+    defp slice(proto, addr, 1, _step) do
       [%BitwiseIp{proto: proto, addr: addr}]
     end
 
-    defp slice(proto, addr, n) do
-      [%BitwiseIp{proto: proto, addr: addr} | slice(proto, addr + 1, n - 1)]
+    defp slice(proto, addr, n, s) do
+      [%BitwiseIp{proto: proto, addr: addr} | slice(proto, addr + s, n - 1, s)]
     end
 
     def reduce(%Block{proto: proto, addr: addr} = block, acc, fun) do
