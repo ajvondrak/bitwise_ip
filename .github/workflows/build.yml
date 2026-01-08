@@ -24,16 +24,24 @@ jobs:
 
     strategy:
       fail-fast: false
+      # https://hexdocs.pm/elixir/compatibility-and-deprecations.html
+      #
+      # We only test officially supported Elixir versions (as of whenever this
+      # workflow file was last updated, anyway). For each version of Elixir, we
+      # use the minimum supported OTP version. On the latest version of Elixir,
+      # we additionally test the maximum supported OTP version.
       matrix:
         include:
-          - elixir: '1.15'
+          - elixir: '1.15' # supports OTP 24 - 26
+            otp: '24'
+          - elixir: '1.16' # supports OTP 24 - 26
+            otp: '24'
+          - elixir: '1.17' # supports OTP 25 - 27
+            otp: '25'
+          - elixir: '1.18' # supports OTP 25 - 27
+            otp: '25'
+          - elixir: '1.19' # supports OTP 26 - 28
             otp: '26'
-          - elixir: '1.16'
-            otp: '27'
-          - elixir: '1.17'
-            otp: '27'
-          - elixir: '1.18'
-            otp: '27'
           - elixir: '1.19'
             otp: '28'
 
