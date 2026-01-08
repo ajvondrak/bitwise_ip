@@ -2,10 +2,10 @@ defmodule BitwiseIp.Block do
   @moduledoc """
   A struct representing a range of bitwise IP addresses.
 
-  Since 1993, [classless inter-domain routing
-  (CIDR)](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) has
-  been the basis for allocating blocks of IP addresses and efficiently routing
-  between them.
+  Since 1993, [classless inter-domain routing (CIDR)][cidr] has been the basis
+  for allocating blocks of IP addresses and efficiently routing between them.
+
+  [cidr]: https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 
   If you think about the standard human-readable notation for IP addresses, a
   CIDR block is essentially a pattern with "wildcards" at the end. For example,
