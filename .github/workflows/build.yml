@@ -20,7 +20,7 @@ jobs:
     name: Elixir ${{ matrix.elixir }} (OTP ${{ matrix.otp }})
 
     env:
-      MIX_ENV: test
+      MIX_ENV: ci
 
     strategy:
       fail-fast: false
@@ -47,7 +47,6 @@ jobs:
 
     permissions:
       contents: read
-
 
     runs-on: ubuntu-22.04
 
