@@ -32,12 +32,12 @@ blocks = v4 ++ v6
 
 suite = %{
   run: fn -> Enum.each(blocks, &Run.size/1) end,
-  compile: fn -> Enum.each(blocks, &Compile.size/1) end,
+  compile: fn -> Enum.each(blocks, &Compile.size/1) end
 }
 
 formatters = [
   {Benchee.Formatters.HTML, file: "tmp/size.html", auto_open: false},
-  Benchee.Formatters.Console,
+  Benchee.Formatters.Console
 ]
 
 Benchee.run(suite, formatters: formatters)
