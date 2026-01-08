@@ -144,9 +144,7 @@ defmodule BitwiseIp.BlockTest do
       addr_h = BitwiseIp.encode({a, b, c, d, e, f, g, h}).addr
 
       addr_x =
-        BitwiseIp.encode(
-          {a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0}
-        ).addr
+        BitwiseIp.encode({a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0}).addr
 
       mask_z = Mask.encode(:v6, 0)
       mask_a = Mask.encode(:v6, 16)
@@ -259,10 +257,7 @@ defmodule BitwiseIp.BlockTest do
       for member <- 0x8800..0x88FF do
         assert Block.member?(
                  block,
-                 BitwiseIp.encode(
-                   {0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777,
-                    member}
-                 )
+                 BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, member})
                )
       end
     end
@@ -272,18 +267,12 @@ defmodule BitwiseIp.BlockTest do
 
       refute Block.member?(
                block,
-               BitwiseIp.encode(
-                 {0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777,
-                  0x87FF}
-               )
+               BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x87FF})
              )
 
       refute Block.member?(
                block,
-               BitwiseIp.encode(
-                 {0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777,
-                  0x8900}
-               )
+               BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x8900})
              )
     end
 
