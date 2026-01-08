@@ -398,15 +398,15 @@ defmodule BitwiseIp.Block do
 
     def slice(%Block{proto: proto, addr: addr} = block) do
       size = Block.size(block)
-      {:ok, size, &slice(proto, addr + &1, &2)}
+      {:ok, size, &slice(proto, addr + &1, &2, &3)}
     end
 
-    defp slice(proto, addr, 1) do
+    defp slice(proto, addr, 1, _step) do
       [%BitwiseIp{proto: proto, addr: addr}]
     end
 
-    defp slice(proto, addr, n) do
-      [%BitwiseIp{proto: proto, addr: addr} | slice(proto, addr + 1, n - 1)]
+    defp slice(proto, addr, n, s) do
+      [%BitwiseIp{proto: proto, addr: addr} | slice(proto, addr + s, n - 1, s)]
     end
 
     def reduce(%Block{proto: proto, addr: addr} = block, acc, fun) do
