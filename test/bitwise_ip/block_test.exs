@@ -37,49 +37,49 @@ defmodule BitwiseIp.BlockTest do
     end
 
     test "invalid CIDR" do
-      assert_raise ArgumentError,
-                   ~S'Invalid IP address "invalid" in CIDR "invalid"',
-                   fn -> Block.parse!("invalid") end
+      assert_raise ArgumentError, ~S'Invalid IP address "invalid" in CIDR "invalid"', fn ->
+        Block.parse!("invalid")
+      end
     end
 
     test "invalid IPv4 address" do
-      assert_raise ArgumentError,
-                   ~S'Invalid IP address "256.0.0.0" in CIDR "256.0.0.0/8"',
-                   fn -> Block.parse!("256.0.0.0/8") end
+      assert_raise ArgumentError, ~S'Invalid IP address "256.0.0.0" in CIDR "256.0.0.0/8"', fn ->
+        Block.parse!("256.0.0.0/8")
+      end
     end
 
     test "invalid IPv6 address" do
-      assert_raise ArgumentError,
-                   ~S'Invalid IP address "f7::u" in CIDR "f7::u/12"',
-                   fn -> Block.parse!("f7::u/12") end
+      assert_raise ArgumentError, ~S'Invalid IP address "f7::u" in CIDR "f7::u/12"', fn ->
+        Block.parse!("f7::u/12")
+      end
     end
 
     test "invalid IPv4 mask" do
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv4 mask "-1" in CIDR "1.2.3.4/-1"',
-                   fn -> Block.parse!("1.2.3.4/-1") end
+      assert_raise ArgumentError, ~S'Invalid IPv4 mask "-1" in CIDR "1.2.3.4/-1"', fn ->
+        Block.parse!("1.2.3.4/-1")
+      end
 
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv4 mask "blah" in CIDR "1.2.3.4/blah"',
-                   fn -> Block.parse!("1.2.3.4/blah") end
+      assert_raise ArgumentError, ~S'Invalid IPv4 mask "blah" in CIDR "1.2.3.4/blah"', fn ->
+        Block.parse!("1.2.3.4/blah")
+      end
 
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv4 mask "33" in CIDR "1.2.3.4/33"',
-                   fn -> Block.parse!("1.2.3.4/33") end
+      assert_raise ArgumentError, ~S'Invalid IPv4 mask "33" in CIDR "1.2.3.4/33"', fn ->
+        Block.parse!("1.2.3.4/33")
+      end
     end
 
     test "invalid IPv6 mask" do
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv6 mask "-1" in CIDR "::/-1"',
-                   fn -> Block.parse!("::/-1") end
+      assert_raise ArgumentError, ~S'Invalid IPv6 mask "-1" in CIDR "::/-1"', fn ->
+        Block.parse!("::/-1")
+      end
 
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv6 mask "blah" in CIDR "::/blah"',
-                   fn -> Block.parse!("::/blah") end
+      assert_raise ArgumentError, ~S'Invalid IPv6 mask "blah" in CIDR "::/blah"', fn ->
+        Block.parse!("::/blah")
+      end
 
-      assert_raise ArgumentError,
-                   ~S'Invalid IPv6 mask "129" in CIDR "::/129"',
-                   fn -> Block.parse!("::/129") end
+      assert_raise ArgumentError, ~S'Invalid IPv6 mask "129" in CIDR "::/129"', fn ->
+        Block.parse!("::/129")
+      end
     end
 
     test "IPv4 address without mask" do
@@ -110,23 +110,12 @@ defmodule BitwiseIp.BlockTest do
       mask_d = Mask.encode(:v4, 32)
       mask_x = Mask.encode(:v4, 12)
 
-      assert %Block{proto: :v4, addr: addr_z, mask: mask_z} ==
-               Block.parse!("#{ip}/0")
-
-      assert %Block{proto: :v4, addr: addr_a, mask: mask_a} ==
-               Block.parse!("#{ip}/8")
-
-      assert %Block{proto: :v4, addr: addr_b, mask: mask_b} ==
-               Block.parse!("#{ip}/16")
-
-      assert %Block{proto: :v4, addr: addr_c, mask: mask_c} ==
-               Block.parse!("#{ip}/24")
-
-      assert %Block{proto: :v4, addr: addr_d, mask: mask_d} ==
-               Block.parse!("#{ip}/32")
-
-      assert %Block{proto: :v4, addr: addr_x, mask: mask_x} ==
-               Block.parse!("#{ip}/12")
+      assert %Block{proto: :v4, addr: addr_z, mask: mask_z} == Block.parse!("#{ip}/0")
+      assert %Block{proto: :v4, addr: addr_a, mask: mask_a} == Block.parse!("#{ip}/8")
+      assert %Block{proto: :v4, addr: addr_b, mask: mask_b} == Block.parse!("#{ip}/16")
+      assert %Block{proto: :v4, addr: addr_c, mask: mask_c} == Block.parse!("#{ip}/24")
+      assert %Block{proto: :v4, addr: addr_d, mask: mask_d} == Block.parse!("#{ip}/32")
+      assert %Block{proto: :v4, addr: addr_x, mask: mask_x} == Block.parse!("#{ip}/12")
     end
 
     test "IPv6 address with mask" do
@@ -142,9 +131,7 @@ defmodule BitwiseIp.BlockTest do
       addr_f = BitwiseIp.encode({a, b, c, d, e, f, 0, 0}).addr
       addr_g = BitwiseIp.encode({a, b, c, d, e, f, g, 0}).addr
       addr_h = BitwiseIp.encode({a, b, c, d, e, f, g, h}).addr
-
-      addr_x =
-        BitwiseIp.encode({a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0}).addr
+      addr_x = BitwiseIp.encode({a, b, c, d, :erlang.band(e, 0b1000000000000000), 0, 0, 0}).addr
 
       mask_z = Mask.encode(:v6, 0)
       mask_a = Mask.encode(:v6, 16)
@@ -157,35 +144,16 @@ defmodule BitwiseIp.BlockTest do
       mask_h = Mask.encode(:v6, 128)
       mask_x = Mask.encode(:v6, 65)
 
-      assert %Block{proto: :v6, addr: addr_z, mask: mask_z} ==
-               Block.parse!("#{ip}/0")
-
-      assert %Block{proto: :v6, addr: addr_a, mask: mask_a} ==
-               Block.parse!("#{ip}/16")
-
-      assert %Block{proto: :v6, addr: addr_b, mask: mask_b} ==
-               Block.parse!("#{ip}/32")
-
-      assert %Block{proto: :v6, addr: addr_c, mask: mask_c} ==
-               Block.parse!("#{ip}/48")
-
-      assert %Block{proto: :v6, addr: addr_d, mask: mask_d} ==
-               Block.parse!("#{ip}/64")
-
-      assert %Block{proto: :v6, addr: addr_e, mask: mask_e} ==
-               Block.parse!("#{ip}/80")
-
-      assert %Block{proto: :v6, addr: addr_f, mask: mask_f} ==
-               Block.parse!("#{ip}/96")
-
-      assert %Block{proto: :v6, addr: addr_g, mask: mask_g} ==
-               Block.parse!("#{ip}/112")
-
-      assert %Block{proto: :v6, addr: addr_h, mask: mask_h} ==
-               Block.parse!("#{ip}/128")
-
-      assert %Block{proto: :v6, addr: addr_x, mask: mask_x} ==
-               Block.parse!("#{ip}/65")
+      assert %Block{proto: :v6, addr: addr_z, mask: mask_z} == Block.parse!("#{ip}/0")
+      assert %Block{proto: :v6, addr: addr_a, mask: mask_a} == Block.parse!("#{ip}/16")
+      assert %Block{proto: :v6, addr: addr_b, mask: mask_b} == Block.parse!("#{ip}/32")
+      assert %Block{proto: :v6, addr: addr_c, mask: mask_c} == Block.parse!("#{ip}/48")
+      assert %Block{proto: :v6, addr: addr_d, mask: mask_d} == Block.parse!("#{ip}/64")
+      assert %Block{proto: :v6, addr: addr_e, mask: mask_e} == Block.parse!("#{ip}/80")
+      assert %Block{proto: :v6, addr: addr_f, mask: mask_f} == Block.parse!("#{ip}/96")
+      assert %Block{proto: :v6, addr: addr_g, mask: mask_g} == Block.parse!("#{ip}/112")
+      assert %Block{proto: :v6, addr: addr_h, mask: mask_h} == Block.parse!("#{ip}/128")
+      assert %Block{proto: :v6, addr: addr_x, mask: mask_x} == Block.parse!("#{ip}/65")
     end
   end
 
@@ -255,25 +223,14 @@ defmodule BitwiseIp.BlockTest do
       block = Block.parse!("1111:2222:3333:4444:5555:6666:7777:8800/120")
 
       for member <- 0x8800..0x88FF do
-        assert Block.member?(
-                 block,
-                 BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, member})
-               )
+        assert Block.member?(block, BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, member}))
       end
     end
 
     test "outside block" do
       block = Block.parse!("1111:2222:3333:4444:5555:6666:7777:8800/120")
-
-      refute Block.member?(
-               block,
-               BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x87FF})
-             )
-
-      refute Block.member?(
-               block,
-               BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x8900})
-             )
+      refute Block.member?(block, BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x87FF}))
+      refute Block.member?(block, BitwiseIp.encode({0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0x7777, 0x8900}))
     end
 
     test "with full-length prefix" do
@@ -291,11 +248,7 @@ defmodule BitwiseIp.BlockTest do
     test "with lower bits that are masked off" do
       block = Block.parse!("a:b:c:d:e:f::/48")
       {_, _, _, d, e, f, g, h} = ipv6()
-
-      assert Block.member?(
-               block,
-               BitwiseIp.encode({0x000A, 0x000B, 0x000C, d, e, f, g, h})
-             )
+      assert Block.member?(block, BitwiseIp.encode({0x000A, 0x000B, 0x000C, d, e, f, g, h}))
     end
 
     test "against IPv4" do
@@ -511,9 +464,7 @@ defmodule BitwiseIp.BlockTest do
     test "reduce IPv4" do
       block = Block.parse!("0.0.0.0/0")
 
-      {:suspended, acc, cont} =
-        Enumerable.reduce(block, {:cont, []}, &reducer/2)
-
+      {:suspended, acc, cont} = Enumerable.reduce(block, {:cont, []}, &reducer/2)
       assert acc == ["0.0.0.0", "0.0.0.1", "0.0.0.2"]
 
       {:halted, acc} = cont.({:cont, acc})
@@ -523,9 +474,7 @@ defmodule BitwiseIp.BlockTest do
     test "reduce IPv6" do
       block = Block.parse!("::/0")
 
-      {:suspended, acc, cont} =
-        Enumerable.reduce(block, {:cont, []}, &reducer/2)
-
+      {:suspended, acc, cont} = Enumerable.reduce(block, {:cont, []}, &reducer/2)
       assert acc == ["::", "::1", "::0.0.0.2"]
 
       {:halted, acc} = cont.({:cont, acc})
