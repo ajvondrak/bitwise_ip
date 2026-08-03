@@ -5,7 +5,7 @@ defmodule BitwiseIp.MixProject do
     [
       app: :bitwise_ip,
       version: "1.2.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       description: "Efficient IP address operations using bitwise arithmetic",
       package: %{
         files: ~w[lib mix.exs README.md LICENSE],
